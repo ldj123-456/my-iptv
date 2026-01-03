@@ -1,0 +1,31 @@
+name: Update IPTV Playlist
+on:
+  schedule:
+    - cron: '0 10 * * 5' # 每周五运行
+  workflow_dispatch:      # 允许手动点按钮运行
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: pip install requests
+
+    - name: Run script
+      run: python main.py
+
+    - name: Commit and push changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add playlist.m3u
+        git commit -m "Auto-update playlist" || exit 0
+        git push
